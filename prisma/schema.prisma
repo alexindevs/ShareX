@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  email        String   @unique
+  password     String
+  firstName    String
+  lastName     String
+  profileImage String?
+  createdAt    DateTime @default(now()) @db.Timestamp(6)
+  updatedAt    DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  refreshTokens RefreshToken[]
+  files         File[]
+  folder        Folder[]
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  token     String   @unique
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+
+  // Relationships
+  user User @relation(fields: [userId], references: [id])
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  path      String
+  sizeInMb  Int
+  type      String
+  extension String
+  metadata  String
+  hash      String
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  // Relationships
+  user      User     @relation(fields: [userId], references: [id])
+  folder    Folder?  @relation(fields: [folderId], references: [id])
+  folderId  Int?
+}
+
+model Folder {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  name      String
+  path      String
+  createdAt DateTime @default(now()) @db.Timestamp(6)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
+  // Relationships
+  user      User     @relation(fields: [userId], references: [id])
+  files     File[]
+}
