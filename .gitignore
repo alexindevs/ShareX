@@ -72,6 +72,8 @@ web_modules/
 # Yarn Integrity file
 .yarn-integrity
 
+
+
 # dotenv environment variable files
 .env
 .env.development.local
@@ -90,6 +92,8 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+
+sharex-9a1cd-firebase-adminsdk-tzqbd-9e0a781986.json
 
 # Gatsby files
 .cache/
