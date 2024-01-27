@@ -1,6 +1,6 @@
 import FileRepository from "../models/file.repository";
 import logger from "../utils/logging/logger";
-
+import clamscan from "../utils/processing/clamscan";
 const fileRepository = new FileRepository();
 
 class FileService {
@@ -100,6 +100,53 @@ class FileService {
             return folder;
         } catch (error) {
             logger.error("Error deleting folder: ", error);
+            throw error;
+        }
+    }
+
+    async scanFileForVirus(filePath: string): Promise<boolean> {
+        try {
+            const result = await (await clamscan).scanFile(filePath);
+            const isInfected = result; // Assuming result is a boolean indicating whether the file is infected
+            return !isInfected;
+        } catch (error) {
+            logger.error('Error scanning file for virus: ', error);
+            throw error;
+        }
+    }
+
+    async addFileWithVirusScan(
+        userId: number,
+        name: string,
+        path: string,
+        size: number,
+        type: string,
+        extension: string,
+        metadata: string,
+        hash: string
+    ) {
+        try {
+            const isSafe = await this.scanFileForVirus(path);
+
+            if (!isSafe) {
+                throw new Error('File contains a virus and cannot be added.');
+            }
+
+            // Proceed with adding the file to the repository
+            const file = await fileRepository.addFile(
+                userId,
+                name,
+                path,
+                size,
+                type,
+                extension,
+                metadata,
+                hash
+            );
+
+            return file;
+        } catch (error) {
+            logger.error('Error adding file with virus scan: ', error);
             throw error;
         }
     }
