@@ -4,12 +4,24 @@
   "description": "ShareX is a file-sharing application",
   "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node ./src/server.ts",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexindevs/ShareX.git"
   },
   "keywords": [
-    "\"Files\""
+    "File",
+    "sharing"
   ],
-  "author": "alexindevs",
+  "author": "Alexin and Oche",
+  "bugs": {
+    "url": "https://github.com/OcheVerse/ShareX-B/issues"
+  },
+  "homepage": "https://github.com/OcheVerse/ShareX-B#readme",
   "license": "ISC",
   "devDependencies": {
     "@types/clamscan": "^2.0.8",
@@ -36,12 +48,15 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.0",
     "express": "^4.18.2",
+    "firebase-admin": "^12.0.0",
     "joi": "^17.12.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.0",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.8",
     "prisma": "^5.8.1",
+    "short-uuid": "^4.2.2",
+    "ts-node": "^10.9.2",
     "uuid": "^9.0.1",
     "winston": "^3.11.0"
   }

@@ -4,7 +4,7 @@ import logger from "../utils/logging/logger";
 const prisma = new PrismaClient();
 
 export default class FileRepository {
-    async addFile(userId: number, name: string, path: string, size: number, type: string, extension: string, metadata: string, hash: string) {
+    async addFile(userId: number, name: string, path: string, size: number, type: string, extension: string, metadata: string, link: string, hash: string) {
         try {
             const file = await prisma.file.create({
                 data: {
@@ -15,6 +15,7 @@ export default class FileRepository {
                     type,
                     extension,
                     metadata,
+                    link,
                     hash
                 }
             });

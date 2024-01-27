@@ -1,12 +1,15 @@
 import FileRepository from "../models/file.repository";
 import logger from "../utils/logging/logger";
 import clamscan from "../utils/processing/clamscan";
+import shortUUID from "short-uuid";
+
 const fileRepository = new FileRepository();
 
-class FileService {
-    async addFile (userId: number, name: string, path: string, size: number, type: string, extension: string, metadata: string, hash: string) {
+export default class FileService {
+    async addFile (userId: number, name: string, path: string, size: number, type: string, extension: string, metadata: string, link: string) {
         try {
-            const file = await fileRepository.addFile(userId, name, path, size, type, extension, metadata, hash);
+            const fileHash = shortUUID.generate();
+            const file = await fileRepository.addFile(userId, name, path, size, type, extension, metadata, link, fileHash);
             return file;
         } catch (error) {
             logger.error("Error adding file: ", error);
@@ -123,7 +126,7 @@ class FileService {
         type: string,
         extension: string,
         metadata: string,
-        hash: string
+        link: string,
     ) {
         try {
             const isSafe = await this.scanFileForVirus(path);
@@ -131,8 +134,7 @@ class FileService {
             if (!isSafe) {
                 throw new Error('File contains a virus and cannot be added.');
             }
-
-            // Proceed with adding the file to the repository
+            const fileHash = shortUUID.generate();
             const file = await fileRepository.addFile(
                 userId,
                 name,
@@ -141,7 +143,8 @@ class FileService {
                 type,
                 extension,
                 metadata,
-                hash
+                link,
+                fileHash
             );
 
             return file;
