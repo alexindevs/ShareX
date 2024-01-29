@@ -16,6 +16,12 @@ WORKDIR /usr/src/app
 # Install ClamAV
 RUN apk --no-cache add clamav clamav-daemon
 
+# Configure ClamAV (create your own clamd.conf file and COPY it into the image)
+COPY clamd.conf /etc/clamav/clamd.conf
+
+# Start ClamAV daemon
+CMD ["clamd"]
+
 ################################################################################
 # Create a stage for installing production dependecies.
 FROM base as deps
