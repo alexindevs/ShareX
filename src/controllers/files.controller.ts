@@ -40,6 +40,10 @@ class FileController {
                 await file.makePublic();
                 // How do we get the link with which to access the file? We need to store that
                 // Let me try this
+                // const fileUrl = await file.getSignedUrl({
+                //     action: 'read',
+                //     expires: '03-09-2491'
+                // });
                 const fileUrl = `https://storage.googleapis.com/${process.env.BUCKET_URL}/${fileName}`;
                 // Above code is untested
                 const addedFile = await fileService.addFile(userId, name, fileUrl, size, type, extension, metadata, fileUrl);
