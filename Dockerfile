@@ -13,6 +13,8 @@ FROM node:${NODE_VERSION}-alpine as base
 # Set working directory for all build stages.
 WORKDIR /usr/src/app
 
+# Install ClamAV
+RUN apk --no-cache add clamav clamav-daemon
 
 ################################################################################
 # Create a stage for installing production dependecies.
@@ -50,6 +52,9 @@ FROM base as final
 
 # Use production node environment by default.
 ENV NODE_ENV production
+
+# Install ClamAV runtime dependencies
+RUN apk --no-cache add libcurl libxml2 json-c
 
 # Run the application as a non-root user.
 USER node
