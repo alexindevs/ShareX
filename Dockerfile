@@ -16,6 +16,8 @@ WORKDIR /usr/src/app
 # Install ClamAV
 RUN apk --no-cache add clamav clamav-daemon
 
+
+
 # Configure ClamAV (create your own clamd.conf file and COPY it into the image)
 # COPY clamd.conf /etc/clamav/clamd.conf
 
@@ -25,6 +27,13 @@ CMD ["clamd"]
 ################################################################################
 # Create a stage for installing production dependecies.
 FROM base as deps
+
+# Change Alpine Linux mirror
+RUN echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/main" > /etc/apk/repositories && \
+    echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/community" >> /etc/apk/repositories
+
+# Install bcrypt dependencies
+RUN apk --no-cache add make g++ python3
 
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.npm to speed up subsequent builds.
@@ -48,6 +57,9 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 
 # Copy the rest of the source files into the image.
 COPY . .
+
+RUN npx prisma generate
+
 # Run the build script.
 RUN npm run build
 
@@ -58,6 +70,9 @@ FROM base as final
 
 # Use production node environment by default.
 ENV NODE_ENV production
+
+ENV NODE_PATH=/usr/src/app/node_modules
+
 
 # Install ClamAV runtime dependencies
 RUN apk --no-cache add libcurl libxml2 json-c
@@ -72,7 +87,6 @@ COPY package.json .
 # the built application from the build stage into the image.
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
-
 
 # Expose the port that the application listens on.
 EXPOSE 3000
