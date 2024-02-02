@@ -88,6 +88,8 @@ COPY package.json .
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY --from=build /usr/src/app/dist ./dist
 
+RUN npx prisma generate
+
 # Expose the port that the application listens on.
 EXPOSE 3000
 
