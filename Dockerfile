@@ -59,6 +59,8 @@ RUN --mount=type=bind,source=package.json,target=package.json \
 COPY . .
 COPY prisma ./prisma/ 
 
+RUN npx prisma generate
+
 # Run the build script.
 RUN npm run build
 
