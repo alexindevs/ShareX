@@ -4,7 +4,7 @@
   "description": "ShareX is a file-sharing application",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npx prisma generate && tsc",
     "start": "node dist/server.js",
     "dev": "ts-node ./src/server.ts",
     "test": "jest"
