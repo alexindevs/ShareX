@@ -93,8 +93,6 @@ out
 .nuxt
 dist
 
-.sharex-9a1cd-firebase-adminsdk-tzqbd-9e0a781986.json
-
 # Gatsby files
 .cache/
 # Comment in the public line in if your project uses Gatsby and not Next.js

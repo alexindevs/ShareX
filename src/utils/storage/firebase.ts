@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import serviceAccount from "./.sharex-9a1cd-firebase-adminsdk-tzqbd-9e0a781986.json";
+import serviceAccount from "./sharex-cred.json";
 
 
 admin.initializeApp({
