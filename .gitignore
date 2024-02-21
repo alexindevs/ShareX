@@ -89,6 +89,8 @@ web_modules/
 .next
 out
 
+uploads/
+
 # Nuxt.js build / generate output
 .nuxt
 dist

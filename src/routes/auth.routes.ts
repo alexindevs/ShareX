@@ -10,4 +10,4 @@ AuthRouter.post('/logout', authController.logout);
 AuthRouter.post('/forgot-password', authController.forgotPassword);
 AuthRouter.post('/reset-password', authController.resetPassword);
 
-export default AuthRouter;
+export default AuthRouter; 
