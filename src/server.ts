@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT || 7000;
 
 import AuthRouter from "./routes/auth.routes";
-import fileRouter from "./routes/files.router";
+import fileRouter from "./routes/files.routes";
 
 app.use(bodyParser.json());
 app.use(cors());

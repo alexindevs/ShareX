@@ -110,8 +110,8 @@ export default class FileService {
     async scanFileForVirus(filePath: string): Promise<boolean> {
         try {
             const result = await (await clamscan).scanFile(filePath);
-            const isInfected = result; // Assuming result is a boolean indicating whether the file is infected
-            return !isInfected;
+            console.log(result);
+            return result.isInfected;
         } catch (error) {
             logger.error('Error scanning file for virus: ', error);
             throw error;
