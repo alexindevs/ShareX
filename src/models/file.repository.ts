@@ -25,6 +25,22 @@ export default class FileRepository {
             throw error;
         }
     }
+    
+    async getFileById(id: number) {
+        return prisma.file.findUnique({
+            where: {
+                id
+            }
+        });
+    }
+
+    getFileByHash = async (hash: string) => {
+        return prisma.file.findUnique({
+            where: {
+                hash
+            }
+        });
+    }
 
     async getFileMetadata(id: number) {
         return prisma.file.findUnique({

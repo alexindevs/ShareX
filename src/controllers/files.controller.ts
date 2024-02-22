@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import FileService from '../services/files.service';
-import multer from 'multer';
 import fs from 'fs';
 import storageBucket from '../utils/storage/firebase';
 import logger from '../utils/logging/logger';
@@ -9,7 +8,6 @@ const fileService = new FileService();
 
 
 class FileController {
-    // This function is buggy, fix tomorrow
     async addFile(req: Request, res: Response) {
         try {
             if (!req.file) {
@@ -19,41 +17,65 @@ class FileController {
             userId = Number(userId);
             const name = req.file.originalname;
             const fileName = name;
-            const image = req.file.path;
+            const filePath = req.file.path;
             const size = req.file.size;
             const type = req.file.mimetype;
             const extension = req.file.originalname.split('.').pop();
             if (!extension) {
                 throw new Error('File extension not found');
             } else if ( extension === 'pdf' ) {
-                const isNotSafe = await fileService.scanFileForVirus(image);
+                const isNotSafe = await fileService.scanFileForVirus(filePath);
                 if (isNotSafe) {
                     throw new Error('File contains a virus and cannot be added.');
                 }
             }
             const metadata = JSON.stringify(req.body);
             const file = storageBucket.file(name);
-            fs.createReadStream(image).pipe(file.createWriteStream()).on('error', (error) => {
+            fs.createReadStream(filePath).pipe(file.createWriteStream()).on('error', (error) => {
                 logger.error(error);
                 return res.status(500).json({ success: false, error: 'Internal Server Error' });
-            }).once('finish', async () => {
+            }).on('finish', async () => {
                 await file.makePublic();
                 // How do we get the link with which to access the file? We need to store that
                 // Let me try this
-                // const fileUrl = await file.getSignedUrl({
-                //     action: 'read',
-                //     expires: '03-09-2491'
-                // });
-                const fileUrl = `https://storage.googleapis.com/${process.env.BUCKET_URL}/${fileName}`;
-                // Above code is untested
+                const fileUrl = await file.getSignedUrl({
+                    action: 'read',
+                    expires: '03-09-2491'
+                }).then(urls => {
+                    return urls[0];
+                });
                 const addedFile = await fileService.addFile(userId, name, fileUrl, size, type, extension, metadata, fileUrl);
                 return res.status(201).json({ success: true, data: addedFile });
-            }).end(req.file.buffer);
+            });
         } catch (error: any) {
             logger.error(error.message);
             return res.status(500).json({ success: false, error: error.message });
         }
     }
+
+    async getFileByHash (req: Request, res: Response) {
+        try {
+            const { hash } = req.params;
+            const file = await fileService.getFileByHash(hash);
+            return res.status(200).json({ success: true, data: file });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
+    }
+
+    async getShareableLinkForFile(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const link = await fileService.getShareableLinkForFile(Number(id));
+            return res.status(200).json({ success: true, data: link });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ success: false, error: 'Internal Server Error' });
+        }
+    }
+
+    
 
     async addFolder(req: Request, res: Response) {
         try {
@@ -71,6 +93,13 @@ class FileController {
         }
     }
 
+    /**
+     * A function to remove a file from a folder.
+     *
+     * @param {Request} req - the request object
+     * @param {Response} res - the response object
+     * @return {Promise<void>} a promise that resolves with the result of the file removal
+     */
     async removeFileFromFolder(req: Request, res: Response) {
         try {
             const { folderId, fileId } = req.body;

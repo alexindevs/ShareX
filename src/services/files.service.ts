@@ -57,6 +57,30 @@ export default class FileService {
         }
     }
 
+    async getShareableLinkForFile(id: number) {
+        try {
+            const file = await fileRepository.getFileById(id);
+            if (!file) {
+                throw new Error("File not found");
+            }
+            const link = process.env.FRONTEND_URL + '/file/' + file.hash;
+            return link;
+        } catch (error) {
+            logger.error("Error getting shareable link for file: ", error);
+            throw error;
+        }
+    }
+
+    async getFileByHash (hash: string) {
+        try {
+            const file = await fileRepository.getFileByHash(hash);
+            return file;
+        } catch (error) {
+            logger.error("Error getting file by hash: ", error);
+            throw error;
+        }
+    }
+
     async getFilesInFolder(userId: number, folderId: number) {
         try {
             const files = await fileRepository.getFilesInFolder(userId, folderId);
