@@ -48,7 +48,7 @@ model File {
   extension String
   metadata  String
   link      String
-  hash      String
+  hash      String @unique
   createdAt DateTime @default(now()) @db.Timestamp(6)
   updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(6)
   // Relationships
